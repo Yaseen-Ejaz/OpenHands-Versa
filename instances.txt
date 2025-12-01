@@ -1,0 +1,5 @@
+SUCCESS
+    openlayers__openlayers-10340
+    carbon-design-system__carbon-11664
+FAIL
+    prettier__prettier-14262

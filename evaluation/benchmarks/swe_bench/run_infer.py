@@ -778,6 +778,7 @@ def process_instance(
     return output
 
 
+# GOOD FUNCTION!
 def filter_dataset(dataset: pd.DataFrame, filter_column: str) -> pd.DataFrame:
     file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.toml')
     if os.path.exists(file_path):

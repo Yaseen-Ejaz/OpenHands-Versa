@@ -692,6 +692,7 @@ class LLM(RetryMixin, DebugMixin):
     def reset(self) -> None:
         self.metrics.reset()
 
+    # IMPORTANT !!!!!!!
     def format_messages_for_llm(self, messages: Message | list[Message]) -> list[dict]:
         if isinstance(messages, Message):
             messages = [messages]

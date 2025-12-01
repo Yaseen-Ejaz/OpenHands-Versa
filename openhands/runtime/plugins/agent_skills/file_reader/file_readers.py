@@ -79,6 +79,7 @@ def parse_latex(file_path: str) -> None:
     print(text.strip())
 
 
+# I THINK THIS IS EXACTLY WHERE IMAGE IS SENT TO LLM???
 def _base64_img(file_path: str) -> str:
     with open(file_path, 'rb') as image_file:
         encoded_image = base64.b64encode(image_file.read()).decode('utf-8')
