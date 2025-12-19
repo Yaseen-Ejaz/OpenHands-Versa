@@ -1,1 +1,4 @@
 *.ipynb linguist-vendored
+
+jack/ linguist-generated
+sb-cli-reports/ linguist-generated
