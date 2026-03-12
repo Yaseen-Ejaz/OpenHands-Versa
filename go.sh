@@ -14,7 +14,7 @@ BASE_DIR="/home/daniel/York/Masters/EECS6444/Project/OpenHands-Versa"
 VENV_NAME="oh_versa"
 CONFIG_TOML_REL="evaluation/benchmarks/swe_bench/config.toml"
 
-MODEL_SPEC_DEFAULT="llm.claude_3_7"
+MODEL_SPEC_DEFAULT="llm.claude4"
 REV_DEFAULT="HEAD"
 AGENT_DEFAULT="CodeActAgent"
 N_WORKERS_DEFAULT="10"
@@ -25,7 +25,7 @@ SPLIT_DEFAULT="test"
 
 # Secrets via env
 : "${SEARCH_API_KEY:=$(head -n 1 'tavily-api-key.txt')}"
-: "${SWE_BENCH_API_KEY:=$(head -n 1 'sb-cli-api-key.txt')}"
+: "${SWE_BENCH_API_KEY:=$(shuf -n 1 'sb-cli-api-key.txt')}"
 
 # ####################################################### #
 # ██   ██ ███████ ██      ██████  ███████ ██████  ███████ #
@@ -99,8 +99,6 @@ infer options:
 
 submit options:
     --out-jsonl <path>    Required (raw inference output .jsonl)
-    --translated <path>   Required (translate output path)
-    --pred <path>         Required (.pred file to submit)
     --model-name <name>   Translator model_name (default: $MODEL_SPEC_DEFAULT)
     --run-id <id>         Default: "<timestamp>" (does NOT need instance)
 
@@ -131,11 +129,10 @@ INSTANCE_ID=""
 DO_CHOWN=1
 
 # submit args
-OUT_JSONL=$(find evaluation/evaluation_outputs/ -type f -name "output.jsonl" -print -quit)
-TRANSLATED_PATH=""
-PRED_PATH=""
+OUT_JSONL=$(find evaluation/evaluation_outputs/outputs/princeton-nlp__SWE-bench_Multimodal-test/CodeActAgent/claude-sonnet-4-20250514_maxiter_50_N_v0.28.1-no-hint-with-browsing-run_1/output.jsonl -type f -name "output.jsonl" -print -quit)
 MODEL_NAME="$MODEL_SPEC_DEFAULT"
 RUN_ID=""
+PREDS_DIR='jack/unsolved10/preds'
 
 # Parse flags (shared + per command)
 while [[ $# -gt 0 ]]; do
@@ -145,15 +142,14 @@ while [[ $# -gt 0 ]]; do
         --dry-run)    DRY_RUN=1; shift ;;
 
         # infer
-        --instance)   INSTANCE_ID="${2:-}"; shift 2 ;;
+        --instance)   INSTANCE_ID="${2:?--instance requires a value}"; shift 2 ;;
         --no-chown)   DO_CHOWN=0; shift ;;
 
         # submit
+        --preds-dir)    PREDS_DIR="${2:-}"; shift 2 ;;
         --out-jsonl)    OUT_JSONL="${2:-}"; shift 2 ;;
-        --translated)   TRANSLATED_PATH="${2:-}"; shift 2 ;;
-        --pred)         PRED_PATH="${2:-}"; shift 2 ;;
         --model-name)   MODEL_NAME="${2:-}"; shift 2 ;;
-        --run-id)       RUN_ID="${2:-}"; shift 2 ;;
+        --run-id)       RUN_ID="${2:?--run-id requires a value}"; shift 2 ;;
 
         -h|--help) usage; exit 0 ;;
         *) die "Unknown argument: $1 (use --help)" ;;
@@ -263,9 +259,12 @@ step_fix_ownership() {
 step_translate() {
     [[ -n "${INSTANCE_ID:-}" ]] || die "INSTANCE_ID is empty (did you pass --instance?)"
 
-    local out_jsonl_abs translated_abs
+    local out_jsonl_abs
+    local translated_abs
+    local tmp_jsonl
+
     out_jsonl_abs="$(abs_path "$BASE_DIR_ARG" "$OUT_JSONL")"
-    translated_abs="$(abs_path "$BASE_DIR_ARG/jack/preds" "$INSTANCE_ID.pred")"
+    translated_abs="$(abs_path "$BASE_DIR_ARG/$PREDS_DIR" "$INSTANCE_ID.pred")"
     tmp_jsonl="$(mktemp --suffix=.jsonl)"
 
     log "translate -> $out_jsonl_abs -> $translated_abs (model_name=$MODEL_NAME)"
@@ -300,7 +299,7 @@ step_submit() {
     [[ -n "$SWE_BENCH_API_KEY" ]] || die "SWE_BENCH_API_KEY is empty. Export it before running submit."
 
     local pred_abs
-    pred_abs="$(abs_path "$BASE_DIR_ARG/jack/preds" "$INSTANCE_ID.pred")"
+    pred_abs="$(abs_path "$BASE_DIR_ARG/$PREDS_DIR" "$INSTANCE_ID.pred")"
 
     RUN_ID="$INSTANCE_ID-$(date +%Y%m%d_%H%M%S)"
 
@@ -337,16 +336,25 @@ case "$CMD" in
         step_fix_ownership
         log "infer done."
         ;;
-    submit)
-        [[ -n "$OUT_JSONL" ]]       || { usage; die "submit requires --out-jsonl"; }
+    translate)
+        [[ -n "$OUT_JSONL" ]] || { usage; die "submit requires --out-jsonl"; }
         [[ -n "$INSTANCE_ID" ]] || { usage; die "infer requires --instance"; }
         step_cd
+        step_check_venv
+        step_translate
+        log "submit done."
+        ;;
+    submit)
+        [[ -n "$OUT_JSONL" ]] || { usage; die "submit requires --out-jsonl"; }
+        [[ -n "$INSTANCE_ID" ]] || { usage; die "infer requires --instance"; }
+        step_cd
+        step_check_venv
         step_translate
         step_submit
         log "submit done."
         ;;
     full)
-        [[ -n "$OUT_JSONL" ]]       || { usage; die "submit requires --out-jsonl"; }
+        [[ -n "$OUT_JSONL" ]] || { usage; die "submit requires --out-jsonl"; }
         [[ -n "$INSTANCE_ID" ]] || { usage; die "infer requires --instance"; }
         step_cd
         step_check_venv
@@ -355,7 +363,7 @@ case "$CMD" in
         step_fix_ownership
         log "infer done."
         step_translate
-        step_submit
+        #step_submit
         log "submit done."
         ;;
     *)

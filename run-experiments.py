@@ -1,181 +1,133 @@
-import argparse
+import json
+import random
 import subprocess
+import typing
+from datetime import datetime, timezone
 from pathlib import Path
+from typing import List, TypedDict
 
 
-def run_instances(start_index: int, n_instances: int) -> None:
-    instances = [
-        # "GoogleChrome__lighthouse-12067",
-        # "GoogleChrome__lighthouse-14800",
-        # "GoogleChrome__lighthouse-2016",
-        # "GoogleChrome__lighthouse-2610",
-        # "GoogleChrome__lighthouse-5011",
-        # "GoogleChrome__lighthouse-5688",
-        # "PrismJS__prism-1585", # RATE LIMITED
-        # "PrismJS__prism-1602",
-        # "PrismJS__prism-1853",
-        # "PrismJS__prism-1895",
-        # "PrismJS__prism-2182",
-        # "PrismJS__prism-2703",
-        # "PrismJS__prism-3174",
-        # "PrismJS__prism-3442",
-        # "alibaba-fusion__next-1063",
-        # "alibaba-fusion__next-1064", # RATE LIMITED
-        # "alibaba-fusion__next-1067",
-        # "alibaba-fusion__next-1509",
-        # "alibaba-fusion__next-1586",
-        # "alibaba-fusion__next-2984",
-        # "alibaba-fusion__next-4182",
-        # "alibaba-fusion__next-717",
-        # "bpmn-io__bpmn-js-1083",
-        # "bpmn-io__bpmn-js-1119", # RATE LIMITED
-        # "bpmn-io__bpmn-js-1151", # RATE LIMITED
-        'bpmn-io__bpmn-js-1168',
-        'bpmn-io__bpmn-js-1172',
-        'bpmn-io__bpmn-js-1196',
-        'bpmn-io__bpmn-js-1198',
-        'bpmn-io__bpmn-js-1238',
-        'bpmn-io__bpmn-js-1299',
-        'bpmn-io__bpmn-js-1348',
-        'bpmn-io__bpmn-js-1382',
-        'bpmn-io__bpmn-js-1434',
-        'bpmn-io__bpmn-js-1438',
-        'bpmn-io__bpmn-js-1442',
-        'bpmn-io__bpmn-js-1542',
-        'bpmn-io__bpmn-js-1557',
-        'bpmn-io__bpmn-js-1567',
-        'bpmn-io__bpmn-js-1570',
-        'bpmn-io__bpmn-js-1578',
-        'bpmn-io__bpmn-js-1584',
-        'bpmn-io__bpmn-js-1607',
-        'bpmn-io__bpmn-js-1610',
-        'bpmn-io__bpmn-js-1623',
-        'bpmn-io__bpmn-js-1636',
-        'bpmn-io__bpmn-js-1638',
-        'bpmn-io__bpmn-js-1640',
-        'bpmn-io__bpmn-js-1644',
-        'bpmn-io__bpmn-js-1655',
-        'bpmn-io__bpmn-js-1659',
-        'bpmn-io__bpmn-js-1677',
-        'bpmn-io__bpmn-js-1679',
-        'bpmn-io__bpmn-js-1719',
-        'bpmn-io__bpmn-js-1720',
-        'bpmn-io__bpmn-js-1802',
-        'bpmn-io__bpmn-js-1847',
-        'bpmn-io__bpmn-js-1928',
-        # "carbon-design-system__carbon-11664",
-        'carbon-design-system__carbon-12398',
-        # "carbon-design-system__carbon-12410",
-        'carbon-design-system__carbon-13317',
-        'carbon-design-system__carbon-13364',
-        'carbon-design-system__carbon-3347',
-        'carbon-design-system__carbon-4167',
-        'carbon-design-system__carbon-4354',
-        'carbon-design-system__carbon-4680',
-        'carbon-design-system__carbon-5156',
-        'carbon-design-system__carbon-6675',
-        'carbon-design-system__carbon-6691',
-        'carbon-design-system__carbon-6964',
-        'carbon-design-system__carbon-7722',
-        'carbon-design-system__carbon-8720',
-        'carbon-design-system__carbon-8912',
-        'carbon-design-system__carbon-9136',
-        'carbon-design-system__carbon-9402',
-        'eslint__eslint-14242',
-        'eslint__eslint-17618',
-        'eslint__eslint-8120',
-        'eslint__eslint-9436',
-        'grommet__grommet-6282',
-        'highlightjs__highlight.js-2958',
-        'highlightjs__highlight.js-3018',
-        'highlightjs__highlight.js-3312',
-        # "openlayers__openlayers-10340",
-        'openlayers__openlayers-10478',
-        'openlayers__openlayers-10545',
-        'openlayers__openlayers-10694',
-        'openlayers__openlayers-10723',
-        'openlayers__openlayers-11047',
-        'openlayers__openlayers-11088',
-        'openlayers__openlayers-11226',
-        'openlayers__openlayers-11377',
-        'openlayers__openlayers-11401',
-        'openlayers__openlayers-11545',
-        'openlayers__openlayers-11649',
-        'openlayers__openlayers-12141',
-        'openlayers__openlayers-12172',
-        'openlayers__openlayers-12194',
-        'openlayers__openlayers-12373',
-        'openlayers__openlayers-12393',
-        'openlayers__openlayers-12467',
-        'openlayers__openlayers-12683',
-        'openlayers__openlayers-12695',
-        'openlayers__openlayers-12962',
-        'openlayers__openlayers-12965',
-        'openlayers__openlayers-13013',
-        'openlayers__openlayers-13020',
-        'openlayers__openlayers-13069',
-        'openlayers__openlayers-13119',
-        'openlayers__openlayers-13150',
-        'openlayers__openlayers-13155',
-        'openlayers__openlayers-13198',
-        'openlayers__openlayers-13212',
-        'openlayers__openlayers-13226',
-        'openlayers__openlayers-13269',
-        'openlayers__openlayers-13333',
-        'openlayers__openlayers-13509',
-        'openlayers__openlayers-13547',
-        'openlayers__openlayers-13648',
-        'openlayers__openlayers-13654',
-        'openlayers__openlayers-13669',
-        'openlayers__openlayers-13823',
-        'openlayers__openlayers-13974',
-        'openlayers__openlayers-13975',
-        'openlayers__openlayers-13981',
-        'openlayers__openlayers-14015',
-        'openlayers__openlayers-14051',
-        'openlayers__openlayers-14066',
-        'openlayers__openlayers-14100',
-        'openlayers__openlayers-14332',
-        'openlayers__openlayers-14414',
-        'openlayers__openlayers-14483',
-        'openlayers__openlayers-14599',
-        'openlayers__openlayers-14619',
-        'openlayers__openlayers-14659',
-        'openlayers__openlayers-14719',
-        'openlayers__openlayers-14932',
-        'openlayers__openlayers-14945',
-        'openlayers__openlayers-15114',
-        'openlayers__openlayers-15168',
-        'openlayers__openlayers-15229',
-        'openlayers__openlayers-15234',
-        'openlayers__openlayers-15271',
-        'openlayers__openlayers-15365',
-        'openlayers__openlayers-15466',
-        'openlayers__openlayers-15484',
-        'openlayers__openlayers-15614',
-        'openlayers__openlayers-15683',
-        'openlayers__openlayers-15685',
-        'openlayers__openlayers-15787',
-        'openlayers__openlayers-15796',
-        'openlayers__openlayers-15825',
-        'openlayers__openlayers-7554',
-        'openlayers__openlayers-8515',
-        'openlayers__openlayers-9307',
-        'openlayers__openlayers-9333',
-        # "openlayers__openlayers-9389",
-        'prettier__prettier-11884',
-        'prettier__prettier-14262',
-        'prettier__prettier-4153',
-        'quarto-dev__quarto-cli-2756',
-    ]
+class Color:
+    # Styles
+    BOLD = '1'
+    UNDERLINE = '4'
+    # Foreground
+    RED = '31'
+    GREEN = '32'
+    YELLOW = '33'
+    BLUE = '34'
+    WHITE = '37'
+    # Background
+    BG_RED = '41'
+    BG_GREEN = '42'
+    BG_YELLOW = '43'
+    BG_BLUE = '44'
 
-    for i, instance_id in enumerate(instances, start=start_index):
-        if i == n_instances:
+
+def notice(text, *args):
+    """
+    Usage: log("Error", Color.RED, Color.BG_YELLOW, Color.BOLD)
+    """
+    if not args:
+        return text
+    codes = ';'.join(args)
+    return print(f'\n\n\033[{codes}m{text}\033[0m\n\n')
+
+
+log_dir = Path.cwd() / 'jack' / 'unsolved10' / 'logs'
+log_dir.mkdir(parents=True, exist_ok=True)
+
+todo_json_filepath = Path.cwd() / 'todo5.json'
+
+ERROR_TRIGGER = (
+    'litellm.exceptions.RateLimitError: litellm.RateLimitError: AnthropicException'
+)
+
+
+class TodoJson(TypedDict):
+    todo: List[str]
+    pending_verification: List[str]
+    rate_limited: List[str]
+    failed_but_should_retry: List[str]
+    success: List[str]
+    fail: List[str]
+
+
+def now_utc() -> str:
+    dt = datetime.now(timezone.utc)
+    timestamp = dt.strftime('%Y-%m-%d_%H-%M-%S-') + f'{dt.microsecond // 1000:03d}Z'
+    return timestamp
+
+
+def iterate_instances():
+    while True:
+        with open(todo_json_filepath, 'r') as f:
+            todo_json = json.load(f)
+            todo_json = typing.cast(TodoJson, todo_json)
+
+        n_remaining_instances = len(todo_json['todo'])
+        if n_remaining_instances == 0:
             break
 
-        log_dir = Path.cwd() / 'jack' / 'logs'
-        log_dir.mkdir(parents=True, exist_ok=True)
-        log_filepath = log_dir / f'{instance_id}.log'
+        instance = todo_json['todo'].pop(random.randrange(n_remaining_instances))
+        todo_json['pending_verification'].append(instance)
+
+        with open(todo_json_filepath, 'w') as f:
+            json.dump(todo_json, f, indent=4)
+
+        yield instance
+
+
+def add_instance_to_rate_limited(instance: str) -> None:
+    with open(todo_json_filepath, 'r') as f:
+        todo_json = json.load(f)
+        todo_json = typing.cast(TodoJson, todo_json)
+
+    try:
+        todo_json['pending_verification'].remove(instance)
+    except:
+        notice(
+            f'Could not find {instance} in pending_verification',
+            Color.BG_RED,
+            Color.WHITE,
+            Color.BOLD,
+        )
+
+    todo_json['rate_limited'].append(instance)
+
+    with open(todo_json_filepath, 'w') as f:
+        json.dump(todo_json, f, indent=4)
+
+
+def docker_prune():
+    notice('Pruning Docker resources', Color.GREEN, Color.WHITE, Color.BOLD)
+    commands = [
+        ['docker', 'image', 'prune', '-a', '-f'],
+        ['docker', 'container', 'prune', '-f'],
+    ]
+
+    for cmd in commands:
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode == 0:
+            notice(
+                f'Docker prune successful: {" ".join(cmd)}',
+                Color.GREEN,
+                Color.WHITE,
+                Color.BOLD,
+            )
+        else:
+            notice(
+                f'Docker prune unsuccessful (return code {result.returncode}): {" ".join(cmd)}\n\n{result.stderr}',
+                Color.RED,
+                Color.WHITE,
+                Color.BOLD,
+            )
+
+
+def run_instances() -> None:
+    for instance_id in iterate_instances():
+        notice(f'Starting instance {instance_id}', Color.GREEN, Color.WHITE, Color.BOLD)
+        log_filepath = log_dir / f'{now_utc()}-{instance_id}.log'
 
         bash = subprocess.Popen(
             ['/bin/bash', 'go.sh', 'full', '--instance', f'{instance_id}'],
@@ -185,22 +137,31 @@ def run_instances(start_index: int, n_instances: int) -> None:
             bufsize=1,
         )
 
-        tee = subprocess.Popen(
-            ['tee', str(log_filepath.absolute())], stdin=bash.stdout, text=True
-        )
+        with open(log_filepath, 'w') as f:
+            # Read line by line as it happens
+            for line in iter(bash.stdout.readline, ''):
+                f.write(line)
+                f.flush()
+                print(line, end='')
+
+                if ERROR_TRIGGER in line:
+                    notice(
+                        'Rate limit detected. Terminating...',
+                        Color.BG_RED,
+                        Color.WHITE,
+                        Color.BOLD,
+                    )
+                    add_instance_to_rate_limited(instance_id)
+                    bash.terminate()
+                    break
 
         bash.stdout.close()
-
         rc_bash = bash.wait()
-        rc_tee = tee.wait()
 
-        print(f'{rc_bash=}, {rc_tee=}')
+        docker_prune()
+
+        notice(f'{rc_bash=}', Color.BG_BLUE, Color.WHITE, Color.BOLD)
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--start', type=int, default=0)
-    parser.add_argument('--n', type=int, default=1)
-    args = parser.parse_args()
-
-    run_instances(int(args.start), int(args.n))
+    run_instances()
