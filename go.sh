@@ -132,7 +132,7 @@ DO_CHOWN=1
 OUT_JSONL=$(find evaluation/evaluation_outputs/outputs/princeton-nlp__SWE-bench_Multimodal-test/CodeActAgent/claude-sonnet-4-20250514_maxiter_50_N_v0.28.1-no-hint-with-browsing-run_1/output.jsonl -type f -name "output.jsonl" -print -quit)
 MODEL_NAME="$MODEL_SPEC_DEFAULT"
 RUN_ID=""
-PREDS_DIR='jack/unsolved10/preds'
+PREDS_DIR='jack/forgotten3/preds'
 
 # Parse flags (shared + per command)
 while [[ $# -gt 0 ]]; do

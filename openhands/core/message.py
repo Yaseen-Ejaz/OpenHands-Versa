@@ -1,7 +1,10 @@
+import base64
 from enum import Enum
+from io import BytesIO
 from typing import Literal
 
 from litellm import ChatCompletionMessageToolCall
+from PIL import Image
 from pydantic import BaseModel, Field, model_serializer
 
 
@@ -36,6 +39,21 @@ class TextContent(Content):
         return data
 
 
+def grayscale_base64(b64_str):
+    # remove data URL prefix if present
+    if b64_str.startswith('data:'):
+        b64_str = b64_str.split(',', 1)[1]
+
+    img_bytes = base64.b64decode(b64_str)
+    img = Image.open(BytesIO(img_bytes))
+    gray = img.convert('L')
+
+    buf = BytesIO()
+    gray.save(buf, format='PNG')
+    gray_b64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+    return f'data:image/png;base64,{gray_b64}'
+
+
 class ImageContent(Content):
     type: str = ContentType.IMAGE_URL.value
     image_urls: list[str]
@@ -44,7 +62,26 @@ class ImageContent(Content):
     def serialize_model(self) -> list[dict[str, str | dict[str, str]]]:
         images: list[dict[str, str | dict[str, str]]] = []
         for url in self.image_urls:
-            images.append({'type': self.type, 'image_url': {'url': url}})
+            if url.startswith('data:image'):
+                # images.append({'type': self.type, 'image_url': {'url': url}})
+                images.append(
+                    {
+                        'type': self.type,
+                        'image_url': {
+                            'url': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAATCAYAAACORR0GAAAABHNCSVQICAgIfAhkiAAAABl0RVh0U29mdHdhcmUAZ25vbWUtc2NyZWVuc2hvdO8Dvz4AAAAtdEVYdENyZWF0aW9uIFRpbWUATW9uIDE1IERlYyAyMDI1IDA5OjAzOjMzIFBNIEVTVD/uqr0AAAAkSURBVDiNY2Tcduc/Ax0AEz0sGbVo1KJRi0YtGrVo1KIRZxEAnNECuMTvgQ8AAAAASUVORK5CYII='
+                        },
+                    }
+                )
+            else:
+                # images.append({'type': self.type, 'image_url': {'url': url}})
+                images.append(
+                    {
+                        'type': self.type,
+                        'image_url': {
+                            'url': 'https://th.bing.com/th/id/R.df94e21d95cb088b2b822af413d01793?rik=IyvOQPshGyXOWQ&pid=ImgRaw&r=0'
+                        },
+                    }
+                )
         if self.cache_prompt and images:
             images[-1]['cache_control'] = {'type': 'ephemeral'}
         return images

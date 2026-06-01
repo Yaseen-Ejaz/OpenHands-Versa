@@ -88,6 +88,7 @@ RUN \
     # Install project dependencies
     /openhands/micromamba/bin/micromamba run -n openhands poetry install --only main,runtime --no-interaction --no-root && \
     # Update and install additional tools
+    rm -f /etc/apt/sources.list.d/google-chrome.list /etc/apt/sources.list.d/google*.list || true && \
     apt-get update && \
     /openhands/micromamba/bin/micromamba run -n openhands poetry run pip install playwright && \
     /openhands/micromamba/bin/micromamba run -n openhands poetry run playwright install --with-deps chromium && \

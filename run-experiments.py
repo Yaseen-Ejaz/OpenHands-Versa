@@ -34,10 +34,13 @@ def notice(text, *args):
     return print(f'\n\n\033[{codes}m{text}\033[0m\n\n')
 
 
-log_dir = Path.cwd() / 'jack' / 'unsolved10' / 'logs'
-log_dir.mkdir(parents=True, exist_ok=True)
+log_dir = Path.cwd() / 'jack' / 'forgotten3' / 'logs'
+preds_dir = Path.cwd() / 'jack' / 'forgotten3' / 'preds'
 
-todo_json_filepath = Path.cwd() / 'todo5.json'
+log_dir.mkdir(parents=True, exist_ok=True)
+preds_dir.mkdir(parents=True, exist_ok=True)
+
+todo_json_filepath = Path.cwd() / 'todo6.json'
 
 ERROR_TRIGGER = (
     'litellm.exceptions.RateLimitError: litellm.RateLimitError: AnthropicException'
