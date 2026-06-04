@@ -10,7 +10,7 @@ IFS=$'\n\t'
 # ██   ██ ██   ██  ██████   ██████  ██      ██ ███████ ██   ████    ██        ██████  ███████ ██      ██   ██  ██████  ███████    ██    ███████ #
 # ###############################################################################################################################################
 
-BASE_DIR="/home/daniel/York/Masters/EECS6444/Project/OpenHands-Versa"
+BASE_DIR="/mnt/c/code/openhands/OpenHands-Versa"
 VENV_NAME="oh_versa"
 CONFIG_TOML_REL="evaluation/benchmarks/swe_bench/config.toml"
 
@@ -130,9 +130,10 @@ DO_CHOWN=1
 
 # submit args
 OUT_JSONL=$(find evaluation/evaluation_outputs/outputs/princeton-nlp__SWE-bench_Multimodal-test/CodeActAgent/claude-sonnet-4-20250514_maxiter_50_N_v0.28.1-no-hint-with-browsing-run_1/output.jsonl -type f -name "output.jsonl" -print -quit)
+#OUT_JSONL=$(find evaluation/output.jsonl -type f -name "output.jsonl" -print -quit)
 MODEL_NAME="$MODEL_SPEC_DEFAULT"
 RUN_ID=""
-PREDS_DIR='jack/forgotten3/preds'
+PREDS_DIR='jack/ocr/preds'
 
 # Parse flags (shared + per command)
 while [[ $# -gt 0 ]]; do
@@ -165,7 +166,7 @@ done
 # #################################################################################################### #
 
 need_cmd sudo
-need_cmd python3
+need_cmd /home/yaseen/miniconda3/envs/oh_versa/bin/python3
 need_cmd jq
 
 [[ -d "$BASE_DIR_ARG" ]] || die "Base dir not found: $BASE_DIR_ARG"
@@ -189,7 +190,7 @@ step_cd() {
 step_check_venv() {
     log "check venv (expecting '$VENV_NAME_ARG')"
     [[ $DRY_RUN -eq 1 ]] && return 0
-    python3 - <<PY
+    /home/yaseen/miniconda3/envs/oh_versa/bin/python3 - <<PY
 import os, sys
 
 expected = "${VENV_NAME_ARG}"
@@ -231,7 +232,7 @@ step_run_infer() {
     export ITERATIVE_EVAL_MODE=true
     export POETRY_BIN="$(command -v poetry)"
     sudo -n -E \
-        /bin/bash /home/daniel/York/Masters/EECS6444/Project/OpenHands-Versa/evaluation/benchmarks/swe_bench/scripts/run_infer.sh \
+        /bin/bash /mnt/c/code/openhands/OpenHands-Versa/evaluation/benchmarks/swe_bench/scripts/run_infer.sh \
             "$MODEL_SPEC_DEFAULT" \
             "$REV_DEFAULT" \
             "$AGENT_DEFAULT" \
@@ -252,8 +253,10 @@ step_fix_ownership() {
     fi
     log "fix ownership -> sudo chown -R $USER:$USER ."
     [[ $DRY_RUN -eq 1 ]] && return 0
-    sudo -n /bin/chown -R "$USER:$USER" /home/daniel/York/Masters/EECS6444/Project/OpenHands-Versa
+    #sudo -n 
+    /bin/chown -R "$USER:$USER" /mnt/c/code/openhands/OpenHands-Versa
 }
+
 
 # Translate the output file to a format understandable by SWE-Bench
 step_translate() {
@@ -282,7 +285,7 @@ step_translate() {
 
     touch "$translated_abs"
 
-    python3 evaluation/benchmarks/swe_bench/sb_cli_translate.py \
+    /home/yaseen/miniconda3/envs/oh_versa/bin/python3 evaluation/benchmarks/swe_bench/sb_cli_translate.py \
         --input_file "$tmp_jsonl" \
         --output_file "$translated_abs" \
         --model_name "$MODEL_NAME"

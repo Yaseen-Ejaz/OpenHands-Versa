@@ -237,3 +237,7 @@ containers/runtime/Dockerfile
 containers/runtime/project.tar.gz
 containers/runtime/code
 **/node_modules/
+
+tavily-api-key.txt
+sb-cli-api-key.txt
+config.toml

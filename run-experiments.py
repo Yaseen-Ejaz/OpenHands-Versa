@@ -34,8 +34,8 @@ def notice(text, *args):
     return print(f'\n\n\033[{codes}m{text}\033[0m\n\n')
 
 
-log_dir = Path.cwd() / 'jack' / 'forgotten3' / 'logs'
-preds_dir = Path.cwd() / 'jack' / 'forgotten3' / 'preds'
+log_dir = Path.cwd() / 'jack' / 'ocr' / 'logs'
+preds_dir = Path.cwd() / 'jack' / 'ocr' / 'preds'
 
 log_dir.mkdir(parents=True, exist_ok=True)
 preds_dir.mkdir(parents=True, exist_ok=True)

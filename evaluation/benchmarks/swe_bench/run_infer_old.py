@@ -113,87 +113,6 @@ def _get_swebench_workspace_dir_name(instance: pd.Series) -> str:
 def get_instruction(instance: pd.Series, metadata: EvalMetadata) -> MessageAction:
     workspace_dir_name = _get_swebench_workspace_dir_name(instance)
     mode = metadata.details['mode']
-
-    ocr_block = (
-    "Image 1:\n"
-    "Name Updated Ideas for FED Branch Boblingen.boxnote 8 Nov 2019 by Jan Hassel\n\n"
-    "Image 2:\n"
-    "F G H 1 J K\n\n"
-    "Image 3:\n"
-    "Carbon # carbon-charts C # carbon-design-system # carbon-react C # carbon-vue C # cdai-pal C # cloud-pal 0 "
-    "IBM Channels + patterns Direct messages + + Invite people\n\n"
-    "Image 4:\n"
-    "JS App.js x "
-    "1 import React from 'react'; "
-    "2 import './App.scss'; "
-    "3 "
-    "4 export default function App() "
-    "5 return ( "
-    "6 <div className='app'> "
-    "7 <h1>Carbon React Sandbox</h1> "
-    "8 </div> "
-    "9 ); "
-    "10 } "
-    "11 "
-    "10.14.0 10.15.0 10.16.0 7.16.0 7.0.7 16.13.1 16.13.1 3.4.1 1.26.10\n\n"
-    "Image 5:\n"
-    "Lorem Ipsum\n\n"
-    "Image 6:\n"
-    "Artificial intelligence Blockchain Business automation Containers Business operations "
-    "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna. "
-    "Cloud computing Containers Share with None "
-    "At vero eos et accusam et justo duo dolores et ea rebum. "
-    "Databases Product team akimata sanctus est Lorem ipsum dolor sit amet. "
-    "Lorem Cut 38 x DevOps Organization adipscing elitr, sed diam nonumy eirmod tempor invidunt ut "
-    "Copy erat, sed diam voluptua. At vero eos et accusam et justo duo "
-    "Solutions Company Copy path d gubergren, no sea takimata sanctus est Lorem ipsum dolor "
-    "Case studies Paste et. Duplicate Resource: ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor "
-    "Data & Analytics Rename nt ut labore et dolore magna aliquyam erat, sed diam voluptua. "
-    "At vero eos et accusam 3E duo dolores et ea rebum. "
-    "Stet clita kasd gubergren, no sea takimata sanctus est Lorem Delete IT infrastructure "
-    "dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor "
-    "invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. "
-    "Data storage At vero eos et accusam et justo duo dolores et ea rebum. "
-    "Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. "
-    "Enterprise servers Hybrid cloud infrastructure Insights Benefits"
-)
-    
-    image_description = (
-    "The image displays a snippet of code written in TypeScript, a programming language that adds static typing to JavaScript.\n\n"
-    "Layout:\n"
-    "The code is presented within a light gray, rectangular container with rounded corners, reminiscent of a code editor or documentation panel. "
-    "The background of the code block itself is white, and the text is left-aligned.\n\n"
-    "Visible Text and Elements:\n\n"
-    "`export interface R<T>`: This line declares a generic interface named `R`.\n"
-    "`export`: This keyword makes the interface available for use in other modules.\n"
-    "`interface`: This keyword signifies the declaration of an interface.\n"
-    "`R`: This is the name of the interface.\n"
-    "`<T>`: This denotes that `R` is a generic interface, where `T` is a type parameter. This means the interface can be used with any type.\n\n"
-    "`{`: This curly brace opens the body of the interface.\n\n"
-    "`data: T;`: This defines a property named `data` within the interface.\n"
-    "`data`: The name of the property.\n"
-    "`: T`: This specifies that the type of the `data` property is the generic type parameter `T`.\n\n"
-    "`total: number;`: This defines a property named `total`.\n"
-    "`total`: The name of the property.\n"
-    "`: number`: This indicates that the type of the `total` property is a `number`.\n\n"
-    "`type?: string;`: This defines an optional property named `type`.\n"
-    "`type`: The name of the property.\n"
-    "`?`: The question mark makes this property optional, meaning it may or may not be present in an object that conforms to this interface.\n"
-    "`: string`: This indicates that if the `type` property is present, its type must be a `string`.\n\n"
-    "`}`: This curly brace closes the body of the interface.\n\n"
-    "Color Coding:\n"
-    "`export`, `interface`: Appear in a purplish-red color.\n"
-    "`R<T>`: `R` is in purplish-red, and `<T>` is in purple.\n"
-    "`data`: Appears in a dark gray or black.\n"
-    "`T` (as the type for `data`): Appears in a light blue.\n"
-    "`total`: Appears in a dark gray or black.\n"
-    "`number`: Appears in a light blue.\n"
-    "`type?`: Appears in a reddish-pink color.\n"
-    "`string`: Appears in a light blue.\n\n"
-    "Caption:\n"
-    "TypeScript generic interface `R` with optional `type` property."
-)
-
     if mode.startswith('swt'):
         test_instructions = (
             f'The following command can be used to run the tests: `{list(MAP_REPO_TO_TEST_FRAMEWORK_VERBOSE[instance.repo].values())[0]}`. Make sure they fail in the expected way.\n'
@@ -209,18 +128,12 @@ I've uploaded a python code repository in the directory {workspace_dir_name}. Co
 {instance.problem_statement}
 </issue_description>
 
-<OCR_Text>
->
-</OCR_Text>
-
 <image_description>
 The image displays a website interface with a carousel or slider component on the left side. This component features an image of a smartphone with a cassette tape graphic overlaid on its screen, suggesting a music-related theme. Text elements are present within the carousel, including Chinese characters that translate to "Fresh Music" and "Born with feelings of nostalgia". Below these, larger Chinese characters read "Cassette player skin design". A left arrow icon is visible on the far left of the carousel, and a right arrow icon is partially visible on the far right, indicating navigation controls. A red arrow points to the left arrow icon, and accompanying red text below it says "The arrow is disabled". The background of the website interface is white.
  
 
  A carousel on a website displays a "Cassette player skin design" with navigation arrows, one of which is marked as disabled.
-</image_description>
-
-I have added the OCR text in <OCR_Text> and the description of the image in <image_description>.
+<image_description>
 
 Can you help me implement the necessary changes to the repository to test whether the issue in <issue_description> was resolved?
 I will take care of all changes to any of the non-test files. This means you DON'T have to modify the actual logic and ONLY have to update test logic and tests!
@@ -244,22 +157,9 @@ I have uploaded a javascript code repository in your current working directory: 
 {instance.problem_statement}
 </issue_description>
 
-<OCR_Text>
->
-</OCR_Text>
-
-<image_description>
-The image displays a website interface with a carousel or slider component on the left side. This component features an image of a smartphone with a cassette tape graphic overlaid on its screen, suggesting a music-related theme. Text elements are present within the carousel, including Chinese characters that translate to "Fresh Music" and "Born with feelings of nostalgia". Below these, larger Chinese characters read "Cassette player skin design". A left arrow icon is visible on the far left of the carousel, and a right arrow icon is partially visible on the far right, indicating navigation controls. A red arrow points to the left arrow icon, and accompanying red text below it says "The arrow is disabled". The background of the website interface is white.
- 
-
- A carousel on a website displays a "Cassette player skin design" with navigation arrows, one of which is marked as disabled.
-</image_description>
-
 Please implement the necessary changes to the repository so that the requirements specified in the <issue_description> are met. Your task is to make the minimal changes to non-test files in the /workspace/{workspace_dir_name} directory to ensure that all the requirements in the <issue_description> are satisfied.
 
 Also, all the image URLs referenced in the <issue_description> have already been included as image inputs and are denoted as Image 1, Image 2, and so on for your reference. In addition, the <issue_description> may also contain links to online IDEs containing useful code to reproduce the issue. The development environment is already set up for you (i.e., all dependencies are already installed), so you do not need to install other packages.
-
-I have added the OCR text in <OCR_Text> and the description of the image in <image_description>.
 
 You MUST strictly follow all the instructions in the below phases to resolve the issue:
 
